@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebUp — وكالة بناء المواقع</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070b14;
+  --bg2: #0c1220;
+  --card: #111827;
+  --card2: #1a2438;
+  --border: #1e2d45;
+  --cyan: #00d4ff;
+  --cyan2: #0099cc;
+  --text: #e8f0fe;
+  --text2: #8899aa;
+  --text3: #445566;
+  --white: #ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+
+/* CURSOR */
+body{cursor:none;}
+#cursor{position:fixed;width:8px;height:8px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s;}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,212,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.15s ease;}
+
+/* NOISE TEXTURE */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,11,20,0.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,212,255,0.08);}
+.nav-logo{font-family:'Fira Code',monospace;font-size:1.2rem;font-weight:600;color:var(--white);letter-spacing:1px;}
+.nav-logo span{color:var(--cyan);}
+.nav-links{display:flex;gap:20px;}
+.nav-links a{text-decoration:none;color:var(--text2);font-size:0.82rem;font-weight:600;transition:color 0.2s;}
+.nav-links a:hover{color:var(--cyan);}
+.nav-cta{background:var(--cyan);color:#000;padding:7px 18px;border-radius:6px;font-size:0.8rem;font-weight:700;text-decoration:none;transition:all 0.2s;font-family:'Cairo',sans-serif;}
+.nav-cta:hover{background:var(--cyan2);transform:translateY(-1px);}
+@media(max-width:600px){.nav-links{display:none;}}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px 40px;text-align:center;position:relative;overflow:hidden;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.04) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%);}
+.hero-glow{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(0,212,255,0.08) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);color:var(--cyan);padding:5px 16px;border-radius:20px;font-size:0.75rem;font-weight:700;margin-bottom:20px;position:relative;z-index:1;}
+.hero h1{font-size:clamp(2rem,8vw,3.5rem);font-weight:900;line-height:1.15;margin-bottom:16px;position:relative;z-index:1;}
+.hero h1 .line1{color:var(--white);}
+.hero h1 .line2{color:var(--cyan);display:block;}
+.hero-sub{color:var(--text2);font-size:0.95rem;line-height:1.8;max-width:480px;margin:0 auto 32px;position:relative;z-index:1;}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;}
+.btn-primary{background:var(--cyan);color:#000;padding:13px 28px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+.btn-primary:hover{background:var(--cyan2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,212,255,0.3);}
+.btn-ghost{background:transparent;color:var(--text);padding:13px 28px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+.hero-stats{display:flex;gap:32px;justify-content:center;margin-top:48px;flex-wrap:wrap;position:relative;z-index:1;}
+.hstat{text-align:center;}
+.hstat-n{font-size:1.8rem;font-weight:900;color:var(--cyan);font-family:'Fira Code',monospace;}
+.hstat-l{font-size:0.72rem;color:var(--text3);margin-top:2px;}
+
+/* SCROLL INDICATOR */
+.scroll-ind{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--text3);font-size:0.7rem;z-index:1;}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--cyan),transparent);animation:scrollAnim 1.5s ease-in-out infinite;}
+@keyframes scrollAnim{0%,100%{opacity:0.3;transform:scaleY(0.8)}50%{opacity:1;transform:scaleY(1)}}
+
+/* SECTIONS */
+section{padding:70px 20px;max-width:900px;margin:0 auto;}
+.sec-tag{display:inline-block;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.15);color:var(--cyan);padding:3px 14px;border-radius:20px;font-size:0.7rem;font-weight:700;margin-bottom:12px;letter-spacing:1px;text-transform:uppercase;}
+.sec-title{font-size:1.6rem;font-weight:900;color:var(--white);margin-bottom:8px;line-height:1.3;}
+.sec-sub{color:var(--text2);font-size:0.88rem;line-height:1.7;margin-bottom:36px;}
+
+/* SERVICES */
+.services-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:500px){.services-grid{grid-template-columns:1fr;}}
+.service-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 18px;transition:all 0.3s ease;position:relative;overflow:hidden;}
+.service-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,0.04),transparent);opacity:0;transition:opacity 0.3s;}
+.service-card:hover{border-color:rgba(0,212,255,0.3);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,212,255,0.08);}
+.service-card:hover::before{opacity:1;}
+.s-icon{font-size:1.8rem;margin-bottom:12px;}
+.s-name{font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:6px;}
+.s-desc{font-size:0.78rem;color:var(--text2);line-height:1.6;}
+.s-price{display:inline-block;margin-top:12px;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);color:var(--cyan);padding:3px 12px;border-radius:20px;font-size:0.72rem;font-weight:700;}
+
+/* WHY US */
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.why-grid{grid-template-columns:1fr;}}
+.why-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;gap:12px;align-items:flex-start;transition:all 0.2s;}
+.why-card:hover{border-color:rgba(0,212,255,0.2);}
+.why-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px;}
+.why-title{font-size:0.85rem;font-weight:700;color:var(--white);margin-bottom:4px;}
+.why-desc{font-size:0.75rem;color:var(--text2);line-height:1.5;}
+
+/* PROCESS */
+.process-steps{display:flex;flex-direction:column;gap:0;}
+.step{display:flex;gap:16px;align-items:flex-start;position:relative;padding-bottom:24px;}
+.step:last-child{padding-bottom:0;}
+.step:not(:last-child)::after{content:'';position:absolute;right:19px;top:40px;bottom:0;width:1px;background:linear-gradient(to bottom,var(--cyan),transparent);opacity:0.3;}
+.step-num{width:40px;height:40px;border-radius:50%;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:var(--cyan);font-family:'Fira Code',monospace;font-size:0.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-title{font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:4px;}
+.step-desc{font-size:0.78rem;color:var(--text2);line-height:1.6;}
+
+/* REVIEWS */
+.reviews-list{display:flex;flex-direction:column;gap:12px;margin-bottom:28px;}
+.review-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;animation:fadeIn 0.4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.review-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.review-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--cyan2));display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;color:#000;flex-shrink:0;}
+.review-name{font-size:0.85rem;font-weight:700;color:var(--white);}
+.review-date{font-size:0.7rem;color:var(--text3);}
+.review-stars{display:flex;gap:2px;margin-right:auto;}
+.star{color:#f59e0b;font-size:0.85rem;}
+.star.empty{color:var(--border);}
+.review-text{font-size:0.82rem;color:var(--text2);line-height:1.7;}
+
+/* ADD REVIEW */
+.add-review{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.add-review-title{font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:16px;}
+.form-group{margin-bottom:12px;}
+.form-label{font-size:0.78rem;color:var(--text2);margin-bottom:6px;display:block;}
+.form-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Cairo',sans-serif;font-size:0.82rem;color:var(--text);outline:none;transition:border-color 0.2s;}
+.form-input:focus{border-color:rgba(0,212,255,0.4);}
+.form-input::placeholder{color:var(--text3);}
+textarea.form-input{resize:none;min-height:90px;}
+.stars-select{display:flex;gap:6px;margin-bottom:12px;}
+.star-sel{font-size:1.4rem;cursor:pointer;color:var(--border);transition:all 0.15s;}
+.star-sel:hover,.star-sel.active{color:#f59e0b;transform:scale(1.15);}
+.submit-btn{background:var(--cyan);color:#000;border:none;border-radius:8px;padding:11px 24px;font-family:'Cairo',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s;width:100%;}
+.submit-btn:hover{background:var(--cyan2);transform:translateY(-1px);}
+
+/* CONTACT */
+.contact-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 20px;text-align:center;}
+.contact-title{font-size:1.1rem;font-weight:900;color:var(--white);margin-bottom:8px;}
+.contact-sub{color:var(--text2);font-size:0.85rem;margin-bottom:24px;line-height:1.7;}
+.wa-btn{display:inline-flex;align-items:center;gap:10px;background:#25d366;color:#fff;padding:14px 32px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 20px rgba(37,211,102,0.3);}
+.wa-btn:hover{background:#1db954;transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,211,102,0.4);}
+.wa-icon{font-size:1.2rem;}
+.contact-note{font-size:0.72rem;color:var(--text3);margin-top:14px;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:24px 20px;text-align:center;max-width:900px;margin:0 auto;}
+.footer-logo{font-family:'Fira Code',monospace;font-size:1.1rem;font-weight:600;color:var(--white);margin-bottom:8px;}
+.footer-logo span{color:var(--cyan);}
+.footer-copy{font-size:0.72rem;color:var(--text3);}
+
+/* WA FLOAT */
+.wa-float{position:fixed;bottom:20px;left:20px;width:52px;height:52px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;text-decoration:none;box-shadow:0 4px 16px rgba(37,211,102,0.4);transition:all 0.2s;z-index:200;animation:waPulse 2s ease-in-out infinite;}
+.wa-float:hover{transform:scale(1.1);}
+@keyframes waPulse{0%,100%{box-shadow:0 4px 16px rgba(37,211,102,0.4)}50%{box-shadow:0 4px 28px rgba(37,211,102,0.7)}}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 auto;max-width:900px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--cyan);color:#000;padding:10px 24px;border-radius:30px;font-size:0.82rem;font-weight:700;opacity:0;transition:all 0.3s;z-index:300;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* REVEAL ANIMATION */
+.reveal{opacity:0;transform:translateY(24px);transition:all 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Web<span>Up</span></div>
+  <div class="nav-links">
+    <a href="#services">الخدمات</a>
+    <a href="#why">لماذا نحن</a>
+    <a href="#reviews">التقييمات</a>
+    <a href="#contact">تواصل</a>
+  </div>
+  <a href="https://wa.me/213558512681" target="_blank" class="nav-cta">ابدأ مشروعك</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-tag">🚀 وكالة بناء المواقع الاحترافية</div>
+  <h1>
+    <span class="line1">موقعك هو</span>
+    <span class="line2">واجهتك للعالم</span>
+  </h1>
+  <p class="hero-sub">نبني مواقع وصفحات هبوط احترافية تحول الزوار إلى زبائن — بتصميم حاد وسرعة في التسليم</p>
+  <div class="hero-btns">
+    <a href="#contact" class="btn-primary">ابدأ مشروعك الآن</a>
+    <a href="#services" class="btn-ghost">اكتشف خدماتنا</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-n">48h</div><div class="hstat-l">وقت التسليم</div></div>
+    <div class="hstat"><div class="hstat-n">100%</div><div class="hstat-l">رضا الزبون</div></div>
+    <div class="hstat"><div class="hstat-n">∞</div><div class="hstat-l">دعم ما بعد التسليم</div></div>
+  </div>
+  <div class="scroll-ind"><div class="scroll-line"></div><span>مرر للأسفل</span></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="reveal">
+    <div class="sec-tag">خدماتنا</div>
+    <div class="sec-title">ما نقدمه لك</div>
+    <div class="sec-sub">كل ما تحتاجه لتكون حاضراً على الإنترنت باحترافية</div>
+  </div>
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <div class="s-icon">🌐</div>
+      <div class="s-name">موقع شركة أو متجر</div>
+      <div class="s-desc">موقع احترافي كامل يعرض نشاطك التجاري ويبني ثقة الزبائن بك</div>
+      <div class="s-price">من 5000 دج</div>
+    </div>
+    <div class="service-card">
+      <div class="s-icon">🎯</div>
+      <div class="s-name">صفحة هبوط Landing Page</div>
+      <div class="s-desc">صفحة مركّزة تحوّل الزوار لزبائن — مثالية للإعلانات والمنتجات</div>
+      <div class="s-price">من 2500 دج</div>
+    </div>
+    <div class="service-card">
+      <div class="s-icon">🛍️</div>
+      <div class="s-name">متجر إلكتروني</div>
+      <div class="s-desc">متجر جاهز للبيع مع عرض المنتجات وإمكانية الطلب عبر واتساب</div>
+      <div class="s-price">من 7000 دج</div>
+    </div>
+    <div class="service-card">
+      <div class="s-icon">🔧</div>
+      <div class="s-name">صيانة وتحديث</div>
+      <div class="s-desc">تحديث المحتوى وإضافة المنتجات وإصلاح أي مشكلة تقنية</div>
+      <div class="s-price">اشتراك شهري</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WHY US -->
+<section id="why">
+  <div class="reveal">
+    <div class="sec-tag">لماذا نحن</div>
+    <div class="sec-title">ما يميزنا عن الآخرين</div>
+    <div class="sec-sub">لسنا مجرد مبرمجين — نحن شركاء في نجاح مشروعك</div>
+  </div>
+  <div class="why-grid reveal">
+    <div class="why-card">
+      <div class="why-icon">⚡</div>
+      <div>
+        <div class="why-title">تسليم في 48 ساعة</div>
+        <div class="why-desc">لا انتظار أسابيع — موقعك جاهز خلال يومين من تأكيد الطلب</div>
+      </div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">📱</div>
+      <div>
+        <div class="why-title">متوافق مع الهاتف 100%</div>
+        <div class="why-desc">كل موقع نبنيه يعمل بشكل مثالي على الهاتف والتابلت والكمبيوتر</div>
+      </div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">💬</div>
+      <div>
+        <div class="why-title">تواصل مباشر دائم</div>
+        <div class="why-desc">واتساب مفتوح — ترسل ملاحظاتك وتحصل على رد فوري</div>
+      </div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🎨</div>
+      <div>
+        <div class="why-title">تصميم حسب هويتك</div>
+        <div class="why-desc">لا قوالب جاهزة — كل موقع يبنى من الصفر ليعكس علامتك التجارية</div>
+      </div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🔒</div>
+      <div>
+        <div class="why-title">استضافة مجانية</div>
+        <div class="why-desc">موقعك منشور مجاناً على GitHub Pages — لا تكاليف استضافة شهرية</div>
+      </div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">📈</div>
+      <div>
+        <div class="why-title">محسّن لجوجل SEO</div>
+        <div class="why-desc">مواقعنا مبنية بمعايير SEO لتظهر في نتائج البحث وتجذب زبائن جدد</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="reveal">
+    <div class="sec-tag">كيف نعمل</div>
+    <div class="sec-title">من الفكرة للموقع</div>
+    <div class="sec-sub">4 خطوات بسيطة وموقعك جاهز</div>
+  </div>
+  <div class="process-steps reveal">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div>
+        <div class="step-title">تواصل معنا</div>
+        <div class="step-desc">أرسل لنا عبر واتساب فكرتك واحتياجاتك — الاستشارة مجانية تماماً</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div>
+        <div class="step-title">نصمم ونبني</div>
+        <div class="step-desc">نبدأ فوراً بالتصميم والبرمجة بناءً على متطلباتك وهويتك البصرية</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div>
+        <div class="step-title">مراجعة وتعديل</div>
+        <div class="step-desc">نعرض عليك النتيجة ونعدّل أي تفصيلة لا تعجبك حتى تقول "ممتاز"</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div>
+        <div class="step-title">تسليم ونشر</div>
+        <div class="step-desc">موقعك منشور وجاهز للعرض — مع دعم مستمر بعد التسليم</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="reveal">
+    <div class="sec-tag">التقييمات</div>
+    <div class="sec-title">ماذا يقول زبائننا</div>
+    <div class="sec-sub">آراء حقيقية من أصحاب مشاريع وثقوا بنا</div>
+  </div>
+
+  <div class="reviews-list reveal" id="reviews-list"></div>
+
+  <!-- ADD REVIEW -->
+  <div class="add-review reveal">
+    <div class="add-review-title">✍️ أضف تقييمك</div>
+    <div class="form-group">
+      <label class="form-label">اسمك</label>
+      <input type="text" class="form-input" id="review-name" placeholder="مثال: أحمد من الجزائر العاصمة">
+    </div>
+    <div class="form-group">
+      <label class="form-label">تقييمك</label>
+      <div class="stars-select" id="stars-select">
+        <span class="star-sel" data-val="1">★</span>
+        <span class="star-sel" data-val="2">★</span>
+        <span class="star-sel" data-val="3">★</span>
+        <span class="star-sel" data-val="4">★</span>
+        <span class="star-sel" data-val="5">★</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">تعليقك</label>
+      <textarea class="form-input" id="review-text" placeholder="شاركنا تجربتك مع WebUp..."></textarea>
+    </div>
+    <button class="submit-btn" onclick="submitReview()">إرسال التقييم</button>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-wrap reveal">
+    <div class="sec-tag" style="margin-bottom:12px">تواصل معنا</div>
+    <div class="contact-title">جاهز تبدأ مشروعك؟</div>
+    <div class="contact-sub">
+      تواصل معنا الآن عبر واتساب — الاستشارة مجانية<br>
+      ونرد خلال أقل من ساعة
+    </div>
+    <a href="https://wa.me/213558512681?text=مرحباً، أريد الاستفسار عن بناء موقع" target="_blank" class="wa-btn">
+      <span class="wa-icon">💬</span>
+      تواصل عبر واتساب
+    </a>
+    <div class="contact-note">⏰ متاحون من 8 صباحاً حتى 10 مساءً</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Web<span>Up</span></div>
+  <div class="footer-copy">© 2025 WebUp — جميع الحقوق محفوظة</div>
+</footer>
+
+<!-- WA FLOAT -->
+<a href="https://wa.me/213558512681?text=مرحباً، أريد الاستفسار عن بناء موقع" target="_blank" class="wa-float">💬</a>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  }, 80);
+});
+document.addEventListener('mousedown', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2)'; });
+document.addEventListener('mouseup', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; });
+
+// REVEAL ON SCROLL
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// DEFAULT REVIEWS
+let reviews = JSON.parse(localStorage.getItem('webup_reviews') || '[]');
+let selectedStars = 0;
+
+function renderReviews() {
+  const list = document.getElementById('reviews-list');
+  if (reviews.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--text3);padding:20px;font-size:0.85rem">لا توجد تقييمات بعد — كن أول من يقيّم!</div>';
+    return;
+  }
+  list.innerHTML = reviews.map(r => `
+    <div class="review-card">
+      <div class="review-header">
+        <div class="review-avatar">${r.name.charAt(0)}</div>
+        <div>
+          <div class="review-name">${r.name}</div>
+          <div class="review-date">${r.date}</div>
+        </div>
+        <div class="review-stars">
+          ${[1,2,3,4,5].map(i => `<span class="star ${i <= r.stars ? '' : 'empty'}">★</span>`).join('')}
+        </div>
+      </div>
+      <div class="review-text">${r.text}</div>
+    </div>
+  `).join('');
+}
+
+// STARS
+document.querySelectorAll('.star-sel').forEach(star => {
+  star.addEventListener('click', () => {
+    selectedStars = parseInt(star.dataset.val);
+    document.querySelectorAll('.star-sel').forEach((s, i) => {
+      s.classList.toggle('active', i < selectedStars);
+    });
+  });
+});
+
+function submitReview() {
+  const name = document.getElementById('review-name').value.trim();
+  const text = document.getElementById('review-text').value.trim();
+  if (!name) { showToast('⚠️ أدخل اسمك'); return; }
+  if (!selectedStars) { showToast('⚠️ اختر عدد النجوم'); return; }
+  if (!text) { showToast('⚠️ اكتب تعليقك'); return; }
+
+  const now = new Date();
+  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const date = months[now.getMonth()] + ' ' + now.getFullYear();
+
+  reviews.unshift({ name, stars: selectedStars, text, date });
+  localStorage.setItem('webup_reviews', JSON.stringify(reviews));
+  renderReviews();
+
+  document.getElementById('review-name').value = '';
+  document.getElementById('review-text').value = '';
+  selectedStars = 0;
+  document.querySelectorAll('.star-sel').forEach(s => s.classList.remove('active'));
+  showToast('✅ شكراً على تقييمك!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+renderReviews();
+</script>
+</body>
+</html>
+
